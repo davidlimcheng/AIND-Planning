@@ -211,7 +211,25 @@ class AirCargoProblem(Problem):
         executed.
         """
         # TODO implement (see Russell-Norvig Ed-3 10.2.3  or Russell-Norvig Ed-2 11.2)
+        def goal_achieved_check(pos_states, goals):
+            for state in goals:
+                if state not in pos_states:
+                    return False
+            return True
+
         count = 0
+        actions = self.get_actions()
+        pos_states = (decode_state(node.state, self.state_map)).pos
+        goal_achieved = goal_achieved_check(pos_states, self.goal)
+        for action in actions:
+            if not goal_achieved:
+                relevant_pos_effects = [effect for effect in action.effect_add if effect in self.goal and effect not in pos_states]
+                if relevant_pos_effects:
+                    count += 1
+                    pos_states += relevant_pos_effects
+                    goal_achieved = goal_achieved_check(pos_states, self.goal)
+            else:
+                break
         return count
 
 
